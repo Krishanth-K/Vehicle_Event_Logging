@@ -130,20 +130,6 @@ To run a single-sensor bring-up test, add [`hrc_test.c`](hrc_test.c) (HC-SR04) o
 | [`mpu6050_test.c`](mpu6050_test.c) | MPU6050 standalone test with pin and address auto-probe |
 | [`PRD_Vehicle_Event_Logging.md`](PRD_Vehicle_Event_Logging.md) | Product requirements document |
 | [`Vehicle_Event_Logging_Response_System_Plan.md`](Vehicle_Event_Logging_Response_System_Plan.md) | Original project plan and bill of materials |
-| [`REPORT.pdf`](REPORT.pdf), [`REPORT.md`](REPORT.md), [`REPORT.tex`](REPORT.tex) | Full case-study report |
+| [`team11_report.pdf`](team11_report.pdf), [`REPORT.md`](REPORT.md), [`REPORT.tex`](REPORT.tex) | Full case-study report |
 | [`team11.pptx`](team11.pptx) | Presentation slides |
 | [`submission/`](submission) | Demo video and terminal screenshot |
-
----
-
-## Not Implemented
-
-The original plan also described RTC timestamps, micro-SD logging, INA219, Hall-sensor speed, LDR, IR, an OLED display, a buzzer and wireless links. These are not in the current firmware. See Section 17 of the report for the full list.
-
-## Known Limitations
-
-- The firmware runs at 16 MHz from the internal oscillator, with bit-banged I²C and polled UART output, so the loop blocks briefly while sending alerts.
-- Floating point is used for display values, although the PRD asks for integer-only arithmetic.
-- The PB12 emergency flag can be overwritten by the next MPU6050 read before its alert is printed.
-
-The report lists these and other limitations in Section 12.

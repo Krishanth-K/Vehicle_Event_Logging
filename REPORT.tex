@@ -139,10 +139,6 @@ O7 & Register-level implementation & No HAL; direct access to RCC, GPIO, ADC, US
   \item LED indication and the PB12 hardware emergency interrupt
 \end{itemize}
 
-\subsection{Features Not Implemented}
-The original project plan describes a wider system than the one built. Features that were planned but not implemented are listed in Section~\ref{sec:outofscope}.
-
-%% ---------------------------------------------------------------- 4
 \section{System Overview and Architecture}
 \subsection{Block Diagram}
 \begin{lstlisting}
@@ -453,26 +449,10 @@ Arithmetic & Integer only (NF-04) & Integer for the impact metric; \textbf{\text
 Module layout & Separate \texttt{.c/.h} per driver & \textbf{Single \texttt{main.c}} plus \texttt{config.h}\\
 Threshold levels & Single critical threshold & Added \textbf{Warning} tier and an \texttt{INVALID} state\\
 Extra feature & --- & PB12 \textbf{EXTI emergency input}\\
-Buzzer, RTC, SD & Buzzer in PRD (optional); RTC/SD in plan & Not implemented (Section~\ref{sec:outofscope})\\
 \bottomrule
 \end{tabularx}
 
 %% ---------------------------------------------------------------- 12
-\section{Limitations and Known Issues}
-\begin{itemize}
-  \item \textbf{Blocking, polled design.} Sensor reads and software UART transmission run in the super-loop. A bit-banged character takes about 87~\us, so a full alert line blocks the loop for several milliseconds, more than the 1~ms bound in PRD NF-02. The 100~ms period is still met.
-  \item \textbf{Floating point in firmware} contradicts the PRD's integer-only rule (NF-04). It is harmless on the Cortex-M4F but would matter on an FPU-less port.
-  \item \textbf{\texttt{snprintf} with \texttt{\%f}} increases code size and needs a suitable C library configuration in Keil.
-  \item \textbf{Shared-variable access.} \texttt{state\ttu motion} and \texttt{critical\ttu alert\ttu count} are written from both the ISR and the main loop; the read-modify-write on the counter is not atomic.
-  \item \textbf{PB12 handling.} The ISR forces \texttt{STATE\ttu CRITICAL}, but the next MPU6050 read overwrites \texttt{state\ttu motion}, so the critical state can be cleared before the alert is printed. The \texttt{emergency\ttu exti\ttu triggered} flag is only consumed while the state is still critical. There is also no debounce on the button.
-  \item \textbf{MPU6050 DLPF of $\sim$5~Hz} smooths very short impacts, so a very brief shock could be attenuated before it reaches the threshold.
-  \item \textbf{Alert rate limiting} (every 5th loop) means a critical state is first reported up to $\sim$0.5~s late.
-  \item \textbf{No persistence or timestamps.} Events are not stored, so history is lost when the monitor is closed.
-  \item \textbf{Documentation mismatch.} Header-pin comments in \texttt{mpu6050\ttu test.c} and \texttt{main.c} give different physical positions for PB6/PB7; verify against the board silkscreen.
-  \item \textbf{No measured results} are recorded in the repository (Section~10.3).
-\end{itemize}
-
-%% ---------------------------------------------------------------- 13
 \section{Future Work}
 Implementation improvements to the existing system:
 \begin{enumerate}
@@ -482,7 +462,6 @@ Implementation improvements to the existing system:
   \item Make the PB12 path race-free: latch the event in a dedicated flag and debounce it in hardware or software.
   \item Add a collision-versus-rough-road classifier based on event duration and multi-axis signature, and a watchdog timer for fault recovery. These are planned enhancements, not completed features.
 \end{enumerate}
-Planned hardware and feature additions that were not built are listed in Section~\ref{sec:outofscope}.
 
 %% ---------------------------------------------------------------- 14
 \section{Repository Structure}
@@ -512,57 +491,9 @@ Vehicle_Event_Logging/
 
 %% ---------------------------------------------------------------- 16
 \section{Conclusion}
-The project delivers a working three-sensor vehicle monitor on a bare-metal STM32F411: analog sensing (LM35 on the ADC), digital bus sensing (MPU6050 over a bit-banged I\textsuperscript{2}C master with bus recovery), timing-based sensing (HC-SR04 using the DWT cycle counter), an interrupt-driven emergency input, a four-way mirrored UART alert channel and local LED indication. It follows the PRD's classification model and message format and handles faults gracefully: invalid readings never raise alerts, and an offline MPU6050 is re-initialised automatically. The main gaps are the planned logging features, integer-only arithmetic and non-blocking communication. These, together with recorded bench measurements, are the clear next steps.
+The project delivers a working three-sensor vehicle monitor on a bare-metal STM32F411: analog sensing (LM35 on the ADC), digital bus sensing (MPU6050 over a bit-banged I\textsuperscript{2}C master with bus recovery), timing-based sensing (HC-SR04 using the DWT cycle counter), an interrupt-driven emergency input, a four-way mirrored UART alert channel and local LED indication. It follows the PRD's classification model and message format and handles faults gracefully: invalid readings never raise alerts, and an offline MPU6050 is re-initialised automatically. Planned next steps are interrupt- or DMA-driven communication, integer-only arithmetic, event logging with timestamps, and recorded bench measurements.
 
 %% ---------------------------------------------------------------- 17
-\section{Out of Scope (Planned but Not Implemented)}
-\label{sec:outofscope}
-The following features were considered in the original project plan but have not been implemented in the current firmware.
-
-\subsection*{A. Data Logging and Timestamping}
-\begin{itemize}
-  \item DS3231 RTC module for real-time clock functionality.
-  \item Timestamping of detected vehicle events.
-  \item Micro-SD card integration using SPI.
-  \item Persistent storage of event history.
-\end{itemize}
-
-\subsection*{B. Additional Sensor Integration}
-\begin{itemize}
-  \item INA219 voltage and current monitoring.
-  \item Hall-effect sensor for vehicle speed measurement.
-  \item LDR (Light Dependent Resistor).
-  \item IR sensor.
-  \item MAX30100 sensor.
-\end{itemize}
-
-\subsection*{C. User Interface and Indication}
-\begin{itemize}
-  \item OLED display for real-time system status.
-  \item Buzzer for audible emergency alerts.
-\end{itemize}
-
-\subsection*{D. Wireless and Vehicle Communication}
-\begin{itemize}
-  \item Bluetooth communication.
-  \item CAN (Controller Area Network) communication.
-\end{itemize}
-
-\subsection*{E. Vehicle Control and Safety Mechanisms}
-\begin{itemize}
-  \item Automatic braking mechanism.
-  \item Motor actuation and control.
-\end{itemize}
-
-\subsection*{F. Advanced Processing}
-\begin{itemize}
-  \item Collision-versus-rough-road classification.
-  \item Advanced event analysis using event duration and multi-axis signatures.
-  \item Watchdog-based fault recovery.
-\end{itemize}
-
-\textit{Note:} The advanced-processing and watchdog items also appear in Section~13 (Future Work). They are planned enhancements, not completed features.
-
 \vfill
 \begin{center}\small\itshape
 Prepared for 23CSE304 -- Embedded System, Department of Computer Science and Engineering,\\
