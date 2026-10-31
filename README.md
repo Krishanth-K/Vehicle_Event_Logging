@@ -34,7 +34,10 @@ A PB12 push-button raises a hardware emergency interrupt (EXTI), and the on-boar
 
 ### Demonstration video
 
-<video src="submission/video.mp4" controls width="100%"></video>
+
+
+https://github.com/user-attachments/assets/60057de4-fd58-4113-ab0b-e600b5577593
+
 
 If the player does not load, open the video directly: [submission/video.mp4](submission/video.mp4).
 
