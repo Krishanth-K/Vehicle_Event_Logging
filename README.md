@@ -23,9 +23,9 @@ A PB12 push-button raises a hardware emergency interrupt (EXTI), and the on-boar
 | CB.SC.U4CSE24521 | Krishanth K |
 | CB.SC.U4CSE24550 | Srisanth P A |
 
-**Mentor:** Dr. A. Baskar
-**Course:** 23CSE304 - Embedded System
-**Department:** Department of Computer Science and Engineering
+**Mentor:** Dr. A. Baskar<br>
+**Course:** 23CSE304 - Embedded System<br>
+**Department:** Department of Computer Science and Engineering<br>
 **Institution:** School of Computing, Amrita Vishwa Vidyapeetham, Coimbatore, India.
 
 ---
