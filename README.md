@@ -95,6 +95,24 @@ All thresholds are defined in [`config.h`](config.h).
 
 ## Hardware and Pin Map
 
+### Circuit diagram
+
+Hardware wiring and schematic diagram of the Vehicle Event Logging and Response System:
+
+![Circuit diagram of the Vehicle Event Logging and Response System](circuit_diagram.jpeg)
+
+What the diagram shows:
+
+- **STM32F411CEU6 (Black Pill):** Main microcontroller running bare-metal register-level C at 16 MHz HSI.
+- **LM35 (Temperature Sensor):** Analog temperature input connected to PA0 (ADC1_IN0).
+- **HC-SR04 (Ultrasonic Sensor):** Proximity distance sensor with TRIG on PB0 (GPIO output) and ECHO on PB1 (5 V-tolerant GPIO input).
+- **MPU6050 (6-Axis IMU):** Accelerometer and gyroscope interfaced via bit-banged I²C on PB6 (SCL) and PB7 (SDA), with AD0 pulled to GND (address `0x68`).
+- **Emergency Button (SOS):** Hardware push-button on PB12 configured with internal pull-up for falling-edge EXTI interrupt.
+- **Status LED:** Active-low on-board LED on PC13 (1 Hz heartbeat during normal operation, 10 Hz strobe when critical).
+- **UART Output:** Telemetry and alert stream mirrored across PA9 (USART1), PA2 (USART2), PB10, and PB4 to the PC terminal (Docklight).
+
+### Pin Map
+
 | Signal | Pin | Notes |
 |---|---|---|
 | LM35 output | PA0 | ADC1_IN0 |
@@ -132,4 +150,5 @@ To run a single-sensor bring-up test, add [`hrc_test.c`](hrc_test.c) (HC-SR04) o
 | [`Vehicle_Event_Logging_Response_System_Plan.md`](Vehicle_Event_Logging_Response_System_Plan.md) | Original project plan and bill of materials |
 | [`team11_report.pdf`](team11_report.pdf), [`REPORT.md`](REPORT.md), [`REPORT.tex`](REPORT.tex) | Full case-study report |
 | [`team11.pptx`](team11.pptx) | Presentation slides |
+| [`circuit_diagram.jpeg`](circuit_diagram.jpeg) | Circuit diagram and wiring schematic |
 | [`submission/`](submission) | Demo video and terminal screenshot |
